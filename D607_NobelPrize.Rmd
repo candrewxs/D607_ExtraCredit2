@@ -1,0 +1,123 @@
+---
+title: "Untitled"
+author: "Coffy Andrews-Guo"
+date: "10/11/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load the data
+
+```{r setup, message=FALSE}
+library("jsonlite")
+library("plyr")
+library("dplyr")
+library("httr")
+library("purrr")
+library("rvest")
+```
+
+
+## Make a request to the API Server
+```{r}
+u <- "https://api.nobelprize.org/2.1/nobelPrizes?_ga=2.134026766.167086878.1633996167-1839215677.1633638535"
+```
+
+## Examine the GET() output
+The status deserves some special attention. "Status" refers to the success or failure of the API request, and it comes in the form of a number. The number returned tells you whether or not the request was a success and can also detail some reasons why it might have failed.
+
+The number 200 is what we want to see; it corresponds to a successful request, and that’s what we have here. There is more information about other status codes we might encounter here. Since we have a successful 200 status response, we know that we have the data on hand and we can start working with it.
+
+
+
+
+```{r}
+nobel <- fromJSON(u)
+```
+
+```{r}
+nobel1 <- as.data.frame(nobel$nobelPrizes$awardYear)   # awardYear
+colnames(nobel1)[1] = "Award.Year"  # change column name by colname function
+nobel1
+```
+
+```{r}
+nobel2 <- as.data.frame(nobel$nobelPrizes$category)   # category
+colnames(nobel2)[1] = "Category"  # change column name by colname function
+(nobel2 <- subset(nobel2, select = -c(no, se))) # drop columns 'no' and 'se'
+```
+
+
+```{r}
+nobel3 <- as.data.frame(nobel$nobelPrizes[[3]])    # categoryFullName
+colnames(nobel3)[1] = "Category.FullName"  # change column name by colname function
+(nobel3 <- subset(nobel3, select = -c(no, se))) # drop columns 'no' and 'se'
+```
+
+
+
+```{r}
+nobel4 <- as.data.frame.numeric(nobel$nobelPrizes[[4]])    # prizeAmount
+colnames(nobel4)[1] = "Prize.Amount"  # change column name by colname function
+nobel4
+```
+
+
+
+```{r}
+nobel5 <- as.data.frame.numeric(nobel$nobelPrizes[[5]])  # prizeAmountAdjusted node
+colnames(nobel5)[1] = "Prize.AmountAdjusted"  # change column name by colname function
+nobel5
+```
+
+
+```{r}
+nobel6 <- as.data.frame.numeric(nobel$nobelPrizes$dateAwarded)  # prizeAmountAdjusted node
+#colnames(nobel5)[1] = "Prize.AmountAdjusted"  # change column name by colname function
+nobel6
+```
+
+
+```{r}
+nobel_cbind = cbind.data.frame(nobel1, nobel2, nobel3, nobel4, nobel5, nobel6)
+nobel_cbind
+```
+
+
+```{r}
+#list(nobel$nobelPrizes$laureates)
+```
+
+
+The variable _nobel_ is a list with one element, _noblePrizes_. The variable _noblePrizes_ is a data frame with /{8}{green} columns, one row 
+```{r}
+#names(nobel)
+#names(nobel$nobelPrizes)
+#names(nobel$nobelPrizes[[2]])
+```
+
+```{r}
+#noble_df <- as.data.frame(nobel)
+
+
+#gender <- as.data.frame(table(nobel$nobelPrizes), stringsAsFactors = FALSE)
+
+```
+
+
+
+```{r}
+#p5 <- as.data.frame(table(prizes$year, prizes$gender), stringsAsFactors = FALSE)
+#colnames(p5) <- c("year", "gender", "Freq")
+#p5.1 <- mutate(group_by(p5, gender), cumsum = cumsum(Freq))
+#ggplot(subset(p5.1, gender != "org")) + geom_point(aes(year, log(cumsum), color = gender)) + theme_bw() + scale_x_discrete(breaks = seq(1900, 2015, 10)) + scale_color_manual(values = c("darkorange", "skyblue3")) + labs(x = "year", y = "log(cumulative sum) of laureates", title = "Cumulative Sum of Nobel Laureates by Gender over Time")
+```
+
+
+
+
+```
+
